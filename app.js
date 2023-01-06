@@ -12,7 +12,7 @@ mongoose.set("strictQuery", true);
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5050;
 app.use(express.json());
 dotenv.config();
 app.use(cors());
