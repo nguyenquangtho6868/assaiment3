@@ -27,7 +27,6 @@ exports.register = async (req, res, next) => {
 };
 exports.singIn = async (req, res, next) => {
   try {
-    console.log("ok");
     const email = req.body.email;
     const password = req.body.password;
     User.findOne({ email: email }).then((user) => {
