@@ -7,7 +7,7 @@
     "node": "14.x"
   },
   "scripts": {
-    "build": "node app.js"
+    "builds": "node app.js"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
