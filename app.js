@@ -3,19 +3,52 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
-const MongoDBStore = require("connect-mongodb-session")(session);
+
 const authRoute = require("./routes/auth");
 const productRoute = require("./routes/product");
 const userRoute = require("./routes/user");
-var bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const MongoDBStore = require("connect-mongodb-session")(session);
+
 mongoose.set("strictQuery", true);
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-
-const port = process.env.PORT || 5050;
+const store = new MongoDBStore({
+  uri: "mongodb+srv://Assignment03:Assignment03@cluster0.6eqa60s.mongodb.net/ecommerce",
+  collection: "sessions",
+});
+const port = process.env.PORT || 5000;
 app.use(express.json());
 dotenv.config();
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "http://localhost:3002",
+      "http://localhost:3003",
+      "http://localhost:3004",
+      "http://localhost:3005",
+    ],
+    methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD"],
+    credentials: true,
+  })
+);
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  session({
+    secret: "my secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      sameSite: "lax",
+      secure: false,
+      maxAge: 1000 * 60 * 60,
+    },
+    store: store,
+  })
+);
 
 const connect = async () => {
   try {

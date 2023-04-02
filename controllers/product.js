@@ -31,6 +31,7 @@ exports.addProduct = async (req, res, next) => {
 exports.deleteProduct = async (req, res, next) => {
   try {
     const query = req.query.p;
+    console.log(query);
     await Product.findByIdAndDelete(query);
 
     res.json("Delete Thanh Cong");

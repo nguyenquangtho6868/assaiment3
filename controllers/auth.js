@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+
 exports.register = async (req, res, next) => {
   try {
     const email = req.body.email;
@@ -29,13 +30,18 @@ exports.singIn = async (req, res, next) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
+    console.log(email);
     User.findOne({ email: email }).then((user) => {
       if (!user) {
-        return res.status(201).json("faile");
+        return res.status(201).json("false");
       }
       bcrypt.compare(password, user.password).then((doMatch) => {
         if (doMatch) {
-          return res.status(200).json(user);
+          req.session.isLoggedIn = true;
+          const cookie = req.session;
+
+          const data = { user: user, sesesion: cookie };
+          return res.status(200).json(data);
         }
       });
     });
@@ -43,9 +49,27 @@ exports.singIn = async (req, res, next) => {
     next(err);
   }
 };
-exports.getSingIn = async (req, res, next) => {
+exports.postLogout = async (req, res, next) => {
+  req.session.destroy((err) => {
+    console.log(err);
+    res.json("ok");
+  });
+};
+exports.singInAdmin = async (req, res, next) => {
   try {
-    res.send(req.session.user);
+    const email = req.body.email;
+    const password = req.body.password;
+    console.log("ok");
+    User.findOne({ email: email, role: "admin" }).then((user) => {
+      if (!user) {
+        return res.status(201).json("false");
+      }
+      bcrypt.compare(password, user.password).then((doMatch) => {
+        if (doMatch) {
+          return res.status(200).json(user);
+        }
+      });
+    });
   } catch (err) {
     next(err);
   }
